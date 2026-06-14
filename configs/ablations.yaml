@@ -1,0 +1,74 @@
+# SketchMamba — ablation matrix
+# Each entry overrides keys of configs/default.yaml; a deep-merge is used.
+# All ablations share the same data preprocessing, eval protocol, and seed
+# unless explicitly stated.
+
+base_config: configs/default.yaml
+output_root: results/ablations
+
+runs:
+  # 1. Depth
+  - name: depth_n2
+    overrides: { model: { n_layers: 2 } }
+  - name: depth_n4
+    overrides: { model: { n_layers: 4 } }
+  - name: depth_n8
+    overrides: { model: { n_layers: 8 } }
+
+  # 2. Width
+  - name: width_d96
+    overrides: { model: { d_model: 96 } }
+  - name: width_d256
+    overrides: { model: { d_model: 256 } }
+
+  # 3. State size
+  - name: dstate_8
+    overrides: { model: { d_state: 8 } }
+  - name: dstate_32
+    overrides: { model: { d_state: 32 } }
+
+  # 4. GMM components
+  - name: gmm_M5
+    overrides: { model: { gmm_components: 5 } }
+  - name: gmm_M10
+    overrides: { model: { gmm_components: 10 } }
+  - name: gmm_M30
+    overrides: { model: { gmm_components: 30 } }
+
+  # 5. Joint vs single-task
+  - name: cls_only
+    overrides: { loss: { lambda_rec: 0.0 } }
+  - name: recon_only
+    overrides: { loss: { lambda_cls: 0.0 } }
+
+  # 6. Loss weighting sweep
+  - name: lambda_cls0p5
+    overrides: { loss: { lambda_cls: 0.5 } }
+  - name: lambda_cls2
+    overrides: { loss: { lambda_cls: 2.0 } }
+  - name: lambda_rec0p5
+    overrides: { loss: { lambda_rec: 0.5 } }
+  - name: lambda_rec2
+    overrides: { loss: { lambda_rec: 2.0 } }
+
+  # 7. Backbone swap (matched ~2-4 M params)
+  - name: backbone_gru
+    overrides: { model: { type: gru, d_model: 192, n_layers: 3 } }
+  - name: backbone_transformer
+    overrides: { model: { type: transformer, d_model: 192, n_layers: 4 } }
+  - name: backbone_lstm
+    overrides: { model: { type: lstm, d_model: 192, n_layers: 3 } }
+  - name: backbone_cnn1d
+    overrides: { model: { type: cnn1d, d_model: 192, n_layers: 6 } }
+
+  # 8. Augmentation
+  - name: aug_on
+    overrides: { data: { augment: true } }
+
+  # 9. Progressive supervision scheme
+  - name: prog_last_step
+    overrides: { loss: { progressive: last_step } }
+  - name: prog_kcut1
+    overrides: { loss: { progressive: k_cut, k_cuts: 1 } }
+  - name: prog_kcut4
+    overrides: { loss: { progressive: k_cut, k_cuts: 4 } }

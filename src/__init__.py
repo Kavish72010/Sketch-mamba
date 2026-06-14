@@ -1,1 +1,0 @@
-# SketchMamba - Source package
