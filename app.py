@@ -394,15 +394,8 @@ def build_app(bundle_dir: Path):
 
 
 # --------------------------------------------------------------------------- #
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--bundle", default="exported/sketchmamba_v1", type=Path)
-    ap.add_argument("--host", default="0.0.0.0")
-    ap.add_argument("--port", type=int, default=7860)
-    args = ap.parse_args()
-    demo = build_app(args.bundle)
-    demo.launch(server_name=args.host, server_port=args.port, share=False)
-
-
 if __name__ == "__main__":
-    main()
+    bundle = Path(__file__).resolve().parent / "exported" / "sketchmamba_v1"
+    if not bundle.is_dir():
+        raise SystemExit(f"Model bundle not found: {bundle}")
+    build_app(bundle).launch()
